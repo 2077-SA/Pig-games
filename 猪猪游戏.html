@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>猪猪游乐场 · 完整版</title>
+<style>
+  :root{--bg:#0f0f0f;--card:#1a1a1a;--bd:#333;--fg:#fff;--dim:#888;--acc:#ff9000;--ok:#6cf06c;--bad:#f66;--gold:#fc0;--chip:#1f1f1f;--tip:#151515}
+  body.light{--bg:#f2f2f2;--card:#fff;--bd:#e0e0e0;--fg:#1a1a1a;--dim:#777;--chip:#f0f0f0;--tip:#fff}
+  body.pink{--bg:#fff5f8;--card:#fff;--bd:#ffd6e5;--fg:#4a2a35;--dim:#a87a90;--chip:#fff0f5;--tip:#fff;--acc:#ff5599}
+  body.blue{--bg:#0a1628;--card:#0f1f38;--bd:#1e3a5f;--fg:#d6e8ff;--dim:#9ab4d4;--chip:#122440;--tip:#0f1f38;--acc:#00a8ff}
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Arial','Helvetica',system-ui,sans-serif}
+  body{min-height:100vh;background:var(--bg);color:var(--fg);line-height:1.6;transition:background .3s,color .3s}
+  header{background:var(--card);border-bottom:2px solid var(--acc);position:sticky;top:0;z-index:100;padding:10px 0}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .logo{font-size:22px;font-weight:bold;display:flex;align-items:center;gap:4px}
+  .logo .hub{color:var(--acc)}
+  .chips{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .chip{position:relative;display:flex;align-items:center;gap:6px;background:var(--chip);border:1px solid var(--bd);border-radius:22px;padding:5px 14px;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .25s;user-select:none}
+  .chip:hover{border-color:var(--acc)}
+  .chip.flash{animation:cf .6s ease}
+  @keyframes cf{0%,100%{transform:scale(1)}50%{transform:scale(1.1);box-shadow:0 0 20px var(--acc)}}
+  .chip .ic{font-size:1.05rem;line-height:1}
+  .chip .val{color:var(--acc);font-weight:900;letter-spacing:.4px}
+  .tip{position:absolute;top:calc(100% + 8px);right:0;min-width:250px;max-width:320px;background:var(--tip);border:1px solid var(--acc);border-radius:12px;padding:12px 14px;font-size:.78rem;font-weight:400;color:var(--fg);box-shadow:0 12px 30px rgba(0,0,0,.55);opacity:0;visibility:hidden;transform:translateY(-6px);transition:all .18s ease;z-index:300;pointer-events:none;text-align:left;line-height:1.65}
+  .chip:hover .tip{opacity:1;visibility:visible;transform:translateY(0)}
+  .tip::before{content:'';position:absolute;top:-6px;right:24px;width:10px;height:10px;background:var(--tip);border-left:1px solid var(--acc);border-top:1px solid var(--acc);transform:rotate(45deg)}
+  .tip h4{font-size:.85rem;color:var(--acc);margin-bottom:8px}
+  .tip .row{display:flex;justify-content:space-between;gap:8px;padding:2px 0}
+  .tip .row b{color:var(--acc);font-weight:800}
+  .tip .row .ok{color:var(--ok)} .tip .row .bad{color:var(--bad)}
+  .tip .sep{height:1px;background:var(--bd);margin:8px 0}
+  .tip .note{color:var(--dim);font-size:.7rem;line-height:1.5}
+  .tip .list{font-size:.74rem;color:var(--dim);margin-top:4px}
+  .tip .list div{padding:2px 0}
+  .tip .list b{color:var(--fg);font-weight:700}
+  .themebar{display:flex;gap:3px;background:var(--chip);border:1px solid var(--bd);border-radius:22px;padding:3px}
+  .themebar button{border:none;background:transparent;cursor:pointer;font-size:.95rem;padding:4px 9px;border-radius:16px;color:var(--fg);transition:all .2s;line-height:1}
+  .themebar button:hover{background:var(--bd)}
+  .themebar button.on{background:var(--acc);color:#fff}
+  main{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+  .hero{text-align:center;margin-bottom:22px}
+  .hero h1{font-size:1.8rem;color:var(--acc);letter-spacing:3px;margin-bottom:4px}
+  .hero p{color:var(--dim);font-size:.85rem}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+  .card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:1rem .9rem;cursor:pointer;transition:all .22s;text-align:left;color:var(--fg);font-family:inherit;display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden}
+  .card:hover{border-color:var(--acc);transform:translateY(-3px);box-shadow:0 8px 22px rgba(255,144,0,.15)}
+  .card .em{font-size:1.8rem;line-height:1}
+  .card .nm{font-size:.9rem;font-weight:800;color:var(--acc);letter-spacing:.4px}
+  .card .ds{font-size:.7rem;color:var(--dim);line-height:1.4}
+  .card.hot::after{content:'HOT';position:absolute;top:6px;right:8px;font-size:.55rem;font-weight:900;background:linear-gradient(135deg,#ff5500,#ff9000);color:#fff;padding:1px 6px;border-radius:6px}
+  .card.new::after{content:'NEW';position:absolute;top:6px;right:8px;font-size:.55rem;font-weight:900;background:linear-gradient(135deg,#00a8ff,#4dd0ff);color:#001a33;padding:1px 6px;border-radius:6px}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(5px);z-index:500;display:none;align-items:center;justify-content:center;padding:16px}
+  .overlay.on{display:flex}
+  .panel{background:var(--card);border:2px solid var(--acc);border-radius:18px;max-width:680px;width:100%;max-height:90vh;overflow-y:auto;padding:1.4rem 1.5rem;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.8)}
+  .panel .head{display:flex;align-items:center;gap:12px;margin-bottom:1rem;padding-bottom:.7rem;border-bottom:2px dashed var(--bd)}
+  .panel .head .ph{font-size:2rem;line-height:1}
+  .panel .head h3{font-size:1.15rem;color:var(--acc)}
+  .panel .head .sub{font-size:.75rem;color:var(--dim);margin-top:2px}
+  .panel .close{position:absolute;top:10px;right:14px;background:transparent;border:none;color:var(--dim);font-size:1.6rem;cursor:pointer;line-height:1}
+  .panel .close:hover{color:var(--acc)}
+  .info{background:var(--chip);border:1px solid var(--bd);border-radius:12px;padding:.7rem .9rem;margin:.5rem 0;font-size:.82rem;line-height:1.7}
+  .info b{color:var(--acc)}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:.6rem 0}
+  .row.center{justify-content:center}
+  .btn{background:var(--acc);border:none;border-bottom:4px solid rgba(0,0,0,.35);padding:.45rem 1.2rem;border-radius:30px;color:#fff;font-weight:700;cursor:pointer;font-size:.85rem;font-family:inherit;transition:all .08s}
+  .btn:hover{filter:brightness(1.08)}
+  .btn:active{transform:translateY(3px);border-bottom-width:1px}
+  .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+  .btn.sec{background:#555;color:#eee}
+  .btn.dan{background:#c33}
+  .btn.grn{background:#3a8a3a}
+  .btn.gold{background:linear-gradient(135deg,#ff9000,#fc0);color:#000}
+  .inp{background:var(--chip);border:1px solid var(--bd);color:var(--acc);padding:.4rem .8rem;border-radius:10px;font-size:.88rem;font-weight:700;outline:none;font-family:inherit;width:110px}
+  .log{background:var(--chip);border:1px dashed var(--bd);border-radius:10px;padding:.7rem .9rem;margin:.5rem 0;font-size:.78rem;line-height:1.9;max-height:220px;overflow-y:auto;white-space:pre-wrap}
+  .log .ok{color:var(--ok)} .log .bad{color:var(--bad)} .log .big{color:var(--gold);font-weight:800}
+  .big{text-align:center;font-size:2.2rem;font-weight:900;color:var(--acc);padding:.4rem 0;letter-spacing:2px;min-height:2.8rem}
+  .dice-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:.7rem 0}
+  .die{width:50px;height:50px;background:linear-gradient(145deg,#fff,#ddd);color:#000;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:900;cursor:pointer;transition:all .2s;user-select:none;border:2px solid transparent;box-shadow:0 4px 10px rgba(0,0,0,.35)}
+  .die.held{border-color:var(--acc);background:linear-gradient(145deg,#fff8e0,#ffe8b0);transform:translateY(-4px)}
+  .reels{display:flex;gap:10px;justify-content:center;margin:1rem 0}
+  .reel{width:72px;height:82px;background:var(--chip);border:2px solid var(--bd);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;transition:all .1s}
+  .reel.win{border-color:var(--gold);box-shadow:0 0 18px var(--gold)}
+  .pcard{width:56px;height:80px;background:linear-gradient(145deg,#fff,#e8e8e8);color:#111;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;box-shadow:0 4px 10px rgba(0,0,0,.5);border:1px solid #999;font-size:1.2rem}
+  .pcard .suit{font-size:1rem} .pcard.red{color:#c22}
+  .pcard.back{background:linear-gradient(145deg,#4a2a5a,#2a1a3a);color:var(--gold);font-size:1.4rem}
+  .slot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin:.5rem 0}
+  .slot{background:var(--chip);border:2px dashed var(--bd);border-radius:12px;padding:.7rem .4rem;text-align:center;cursor:pointer;transition:all .2s;font-size:.72rem;color:var(--dim)}
+  .slot:hover{border-color:var(--acc);color:var(--acc)}
+  .slot.on{border-style:solid;border-color:var(--acc);background:rgba(255,144,0,.1);color:var(--acc);font-weight:700}
+  .slot .em{font-size:1.6rem;display:block;margin-bottom:2px}
+  .res{text-align:center;padding:1rem;background:var(--chip);border:1px dashed var(--bd);border-radius:12px;margin:.6rem 0;min-height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+  .res .em{font-size:2.4rem;line-height:1}
+  .res .nm{font-weight:800;color:var(--acc);font-size:1rem}
+  .res .ds{font-size:.75rem;color:var(--dim)}
+  .wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin:.6rem 0}
+  .wcard{background:var(--chip);border:2px solid var(--bd);border-radius:12px;padding:.75rem;text-align:center;transition:all .3s}
+  .wcard.on{border-color:var(--acc);box-shadow:0 0 16px rgba(255,144,0,.35)}
+  .wcard .wi{font-size:1.9rem}
+  .wcard .wn{font-weight:800;font-size:.85rem;color:var(--acc);margin-top:4px}
+  .wcard .we{font-size:.68rem;color:var(--dim);margin-top:4px;line-height:1.4}
+  .pig-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin:.7rem 0}
+  .pig-card{background:var(--chip);border:2px solid var(--bd);border-radius:12px;padding:.6rem;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+  .pig-card:hover{transform:translateY(-2px)}
+  .pig-card.sel{border-color:var(--acc);background:rgba(255,144,0,.08)}
+  .pig-card .pe{font-size:1.7rem;line-height:1.1}
+  .pig-card .pn{font-size:.7rem;font-weight:700;color:var(--acc);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pig-card .ps{font-size:.58rem;color:var(--dim);margin-top:2px;line-height:1.3}
+  .pig-card .pr{position:absolute;top:4px;right:6px;font-size:.55rem;font-weight:900;padding:1px 5px;border-radius:6px}
+  .pig-card.r1 .pr{background:#444;color:#ccc}
+  .pig-card.r2 .pr{background:#1a3a5a;color:#6cb4ff}
+  .pig-card.r3 .pr{background:#3a1a5a;color:#c8f}
+  .pig-card.r4 .pr{background:#5a3a1a;color:var(--gold)}
+  .pig-card.r5 .pr{background:linear-gradient(90deg,#ff9000,#fc0,#ff7eb3);color:#000}
+  .pig-card.r6 .pr{background:linear-gradient(90deg,#ff7eb3,#c8f,#4dd0ff,#6cf06c);color:#000}
+  .hpbar{height:4px;background:var(--bd);border-radius:2px;overflow:hidden;margin-top:4px}
+  .hpbar > div{height:100%;background:var(--ok);transition:width .3s}
+  .toasts{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;max-width:280px}
+  .toast{background:var(--card);border:2px solid var(--acc);border-radius:14px;padding:.6rem 1rem;color:var(--fg);font-size:.83rem;font-weight:700;box-shadow:0 8px 22px rgba(0,0,0,.5);animation:tIn .3s ease;display:flex;align-items:center;gap:8px;pointer-events:auto}
+  .toast.ok{border-color:var(--ok)} .toast.bad{border-color:var(--bad)}
+  .toast.big{border-color:var(--gold);background:linear-gradient(135deg,#2a2418,var(--card))}
+  .toast .em{font-size:1.2rem;line-height:1}
+  @keyframes tIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+  .toast.out{animation:tOut .28s ease forwards}
+  @keyframes tOut{to{opacity:0;transform:translateX(30px)}}
+  @media(max-width:600px){
+    .wrap{flex-direction:column;align-items:stretch}
+    .chips{justify-content:center}
+    .grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+    .tip{right:auto;left:50%;transform:translateX(-50%) translateY(-6px)}
+    .chip:hover .tip{transform:translateX(-50%) translateY(0)}
+    .tip::before{right:auto;left:50%;margin-left:-5px}
+    .toasts{left:12px;right:12px;max-width:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="logo">🐖 <span>猪猪</span><span class="hub">游乐场</span></div>
+    <div class="chips">
+      <div class="chip" id="walletChip">
+        <span class="ic">🪙</span><span class="val" id="walletVal">1000</span>
+        <div class="tip" id="walletTip"></div>
+      </div>
+      <div class="chip" id="weatherChip">
+        <span class="ic" id="wcIcon">☀️</span><span id="wcName">晴朗</span>
+        <span class="val" id="wcMul">×1.00</span>
+        <div class="tip" id="weatherTip"></div>
+      </div>
+      <div class="themebar" id="themebar">
+        <button data-t="dark">🌙</button>
+        <button data-t="light">☀️</button>
+        <button data-t="pink">🌸</button>
+        <button data-t="blue">💙</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <h1>🎰 猪猪游乐场</h1>
+    <p>悬停右上角查看金币流水与天气详情 · 点击卡片开始游戏</p>
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="panel">
+    <button class="close" id="pClose">×</button>
+    <div class="head">
+      <span class="ph" id="pEmoji">🎲</span>
+      <div>
+        <h3 id="pTitle">标题</h3>
+        <div class="sub" id="pSub">副标题</div>
+      </div>
+    </div>
+    <div id="pBody"></div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+/* 全局错误捕获：出错时在页面提示 */
+window.addEventListener('error', e => {
+  console.error(e.error || e.message);
+  const grid = document.getElementById('grid');
+  if (grid && !grid.children.length) {
+    grid.innerHTML = '<div style="color:#f66;padding:20px;grid-column:1/-1;">⚠️ 加载出错：' + (e.message || '未知错误') + '<br>请刷新页面或反馈。</div>';
+  }
+});
+</script>
+
+<script>
+(function(){
+'use strict';
+
+/* ==================== 工具 ==================== */
+const $ = (s, el) => (el || document).querySelector(s);
+const $$ = (s, el) => [...(el || document).querySelectorAll(s)];
+const rand = (a, b) => a + Math.random() * (b - a);
+const randInt = (a, b) => Math.floor(rand(a, b + 1));
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+/* ==================== 状态 ==================== */
+const KEY = 'piggy-lite-v2';
+const state = {
+  wallet: 1000, income: 0, outcome: 0, flow: [],
+  weather: null, inventory: {}, pigs: null, bullseye: null,
+  pranks: 0, lastPrank: 0,
+};
+try { Object.assign(state, JSON.parse(localStorage.getItem(KEY)) || {}); } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
+
+/* ==================== 天气 ==================== */
+const WEATHERS = {
+  sunny: {icon:'☀️', name:'晴朗', mul:1.00, color:'#ffcc66', desc:'风和日丽，艾欧泽亚一切正常', extras:[]},
+  rain:  {icon:'🌧️', name:'暴雨', mul:1.15, color:'#88bbff', desc:'潮湿的空气让猪猪变得慷慨',
+    extras:[{game:'adventure', mul:2, label:'「大冒险」收益 ×2'}]},
+  fog:   {icon:'🌫️', name:'浓雾', mul:0.90, color:'#cccccc', desc:'看不清前路，但惊喜藏在雾里',
+    extras:[{rareBoost:'gacha', label:'「扭蛋机」稀有组合概率提升'},{rareBoost:'alchemy', label:'「炼金锅」彩蛋配方概率提升'}]},
+  storm: {icon:'⛈️', name:'雷暴', mul:1.30, color:'#c8b0ff', desc:'雷电交加，冒险家的狂欢时刻',
+    extras:[{game:'roulette', mul:2, label:'「俄罗斯轮盘」收益 ×2'},{game:'bj', mul:2, label:'「21 点」收益 ×2'}]},
+  meteor:{icon:'🌠', name:'流星雨', mul:2.00, color:'#ffb0d0', desc:'流星划过，鸿运当头，全游戏狂欢',
+    extras:[{all:true, mul:1.5, label:'全游戏收益额外 ×1.5（共 ×3）'}]},
+};
+const WEATHER_WEIGHTS = {sunny:38, rain:26, fog:18, storm:12, meteor:6};
+
+function pickWeatherId(){
+  const total = Object.values(WEATHER_WEIGHTS).reduce((a,b)=>a+b,0);
+  let r = Math.random() * total;
+  for (const [id, w] of Object.entries(WEATHER_WEIGHTS)) { r -= w; if (r <= 0) return id; }
+  return 'sunny';
+}
+function setWeather(id){
+  const dur = id === 'meteor' ? rand(3,7)*60000 : rand(8,15)*60000;
+  state.weather = { id, until: Date.now() + dur };
+  save(); renderWeather();
+  const w = WEATHERS[id];
+  toast(`天气变为【${w.name}】${w.icon}`, id === 'meteor' ? 'big' : 'ok');
+}
+function weatherMul(gameId){
+  if (!state.weather) return 1;
+  const w = WEATHERS[state.weather.id];
+  let mul = w.mul;
+  w.extras.forEach(e => { if (e.all || e.game === gameId) mul *= e.mul || 1; });
+  return mul;
+}
+function hasRareBoost(gameId){
+  if (!state.weather) return false;
+  return WEATHERS[state.weather.id].extras.some(e => e.rareBoost === gameId);
+}
+function renderWeather(){
+  if (!state.weather || Date.now() > state.weather.until) { setWeather(pickWeatherId()); return; }
+  const w = WEATHERS[state.weather.id];
+  const remain = Math.max(0, state.weather.until - Date.now());
+  const mm = Math.floor(remain/60000), ss = Math.floor(remain%60000/1000);
+  const iconEl = $('#wcIcon'), nameEl = $('#wcName'), mulEl = $('#wcMul');
+  if (iconEl) iconEl.textContent = w.icon;
+  if (nameEl) nameEl.textContent = w.name;
+  if (mulEl) mulEl.textContent = '×' + w.mul.toFixed(2);
+
+  const extrasHtml = w.extras.length
+    ? w.extras.map(e => `<div>· ${e.label}</div>`).join('')
+    : '<div class="note">无额外效果</div>';
+  const allList = Object.entries(WEATHERS).map(([id, ww]) => {
+    const cur = id === state.weather.id;
+    return `<div${cur ? ' style="color:var(--acc);font-weight:700"' : ''}><b style="color:${ww.color}">${ww.icon} ${ww.name}</b> <span style="float:right;">×${ww.mul.toFixed(2)}</span></div>`;
+  }).join('');
+  const tipEl = $('#weatherTip');
+  if (tipEl) tipEl.innerHTML = `
+    <h4>${w.icon} ${w.name} <span style="float:right;color:var(--dim);font-size:.75rem;font-weight:400;">剩余 ${mm}:${String(ss).padStart(2,'0')}</span></h4>
+    <div class="note" style="margin-bottom:6px;">${w.desc}</div>
+    <div class="row"><span>本天气基础倍率</span><b>×${w.mul.toFixed(2)}</b></div>
+    <div class="sep"></div>
+    <div style="color:var(--fg);font-weight:700;margin-bottom:4px;">额外效果</div>
+    <div class="list">${extrasHtml}</div>
+    <div class="sep"></div>
+    <div class="note" style="margin-bottom:4px;">全部天气对照（当前高亮）</div>
+    <div class="list">${allList}</div>
+  `;
+}
+
+/* ==================== 钱包 ==================== */
+function renderWallet(){
+  const v = $('#walletVal');
+  if (v) v.textContent = state.wallet;
+  const net = state.income - state.outcome;
+  const flow = state.flow.slice(-5).reverse();
+  const tipEl = $('#walletTip');
+  if (tipEl) tipEl.innerHTML = `
+    <h4>🪙 猪猪币详情</h4>
+    <div class="row"><span>当前余额</span><b>${state.wallet}</b></div>
+    <div class="row"><span>累计收入</span><b class="ok">+${state.income}</b></div>
+    <div class="row"><span>累计支出</span><b class="bad">-${state.outcome}</b></div>
+    <div class="row"><span>净收益</span><b style="color:${net >= 0 ? 'var(--ok)' : 'var(--bad)'}">${net >= 0 ? '+' : ''}${net}</b></div>
+    <div class="sep"></div>
+    <div class="list">
+      <div style="color:var(--fg);font-weight:700;margin-bottom:4px;">最近流水</div>
+      ${flow.length ? flow.map(f => `<div><b style="color:${f.v >= 0 ? 'var(--ok)' : 'var(--bad)'}">${f.v >= 0 ? '+' : ''}${f.v}</b> ${f.reason}</div>`).join('') : '<div class="note">还没有流水</div>'}
+    </div>
+  `;
+}
+function flashWallet(){
+  const el = $('#walletChip');
+  if (!el) return;
+  el.classList.remove('flash');
+  void el.offsetWidth;
+  el.classList.add('flash');
+}
+function addCoin(n, reason){
+  reason = reason || '';
+  if (!n) return;
+  state.wallet = Math.max(0, state.wallet + n);
+  if (n > 0) state.income += n; else state.outcome += -n;
+  if (reason) {
+    state.flow.push({ t: Date.now(), v: n, reason });
+    if (state.flow.length > 40) state.flow.shift();
+  }
+  renderWallet(); save(); flashWallet();
+  if (reason) toast((n > 0 ? '+' : '') + n + ' 🪙 ' + reason, n > 0 ? 'ok' : 'bad');
+}
+function spend(n, reason){
+  reason = reason || '消费';
+  if (state.wallet < n) { toast('猪猪币不足（需要 ' + n + '）', 'bad'); return false; }
+  state.wallet -= n;
+  state.outcome += n;
+  state.flow.push({ t: Date.now(), v: -n, reason });
+  if (state.flow.length > 40) state.flow.shift();
+  renderWallet(); save(); flashWallet();
+  return true;
+}
+function earnCoin(gameId, base, reason){
+  const mul = weatherMul(gameId);
+  const final = Math.max(0, Math.floor(base * mul));
+  const tag = mul !== 1 ? ` ×${mul.toFixed(2)}` : '';
+  addCoin(final, reason + tag);
+  return final;
+}
+
+/* ==================== Toast ==================== */
+function toast(msg, type, emoji){
+  type = type || '';
+  emoji = emoji || '';
+  const wrap = $('#toasts');
+  if (!wrap) return;
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.innerHTML = (emoji ? `<span class="em">${emoji}</span>` : '') + `<span>${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 300); }, 3200);
+}
+
+/* ==================== 游戏注册表 ==================== */
+const GAMES = [];
+
+/* ==================== 弹窗 ==================== */
+const overlay = $('#overlay');
+let currentCleanup = null;
+
+function openPanel(game){
+  if (currentCleanup) { try { currentCleanup(); } catch (e) {} currentCleanup = null; }
+  $('#pEmoji').textContent = game.emoji;
+  $('#pTitle').textContent = game.name;
+  $('#pSub').textContent = game.desc;
+  overlay.classList.add('on');
+  const body = $('#pBody');
+  body.innerHTML = '';
+  try {
+    game.render(body);
+  } catch (e) {
+    console.error('游戏崩溃：', game.id, e);
+    body.innerHTML = '<div class="info" style="color:var(--bad)">游戏加载失败：' + e.message + '</div>';
+  }
+}
+function closePanel(){
+  if (currentCleanup) { try { currentCleanup(); } catch (e) {} currentCleanup = null; }
+  overlay.classList.remove('on');
+  $('#pBody').innerHTML = '';
+}
+$('#pClose').onclick = closePanel;
+overlay.onclick = e => { if (e.target === overlay) closePanel(); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('on')) closePanel(); });
+
+/* ==================== 1. 俄罗斯轮盘 ==================== */
+GAMES.push({
+  id: 'roulette', emoji: '🎲', name: '俄罗斯轮盘', desc: '越贪越刺激', hot: true,
+  render(el){
+    let bullet = randInt(0,5), shots = 0, mult = 1, active = false, log = '';
+    const draw = () => {
+      el.innerHTML = `
+        <div class="info">6 弹巢 1 子弹。每扣一次扳机，<b>倍率翻倍</b>，中弹概率也上升。<br>随时可<b>收手</b>，或贪到最后一发。<br><span style="color:var(--dim);font-size:.9em">当前天气收益 ×${weatherMul('roulette').toFixed(2)}</span></div>
+        <div class="big">${active ? '×' + mult : '准备开始'}</div>
+        <div class="row center">
+          <button class="btn gold" id="go">${active ? '🔫 继续扣扳机' : '🎯 押注 100 币开始'}</button>
+          <button class="btn grn" id="cash" ${active ? '' : 'disabled'}>💰 收手 ×${mult}</button>
+        </div>
+        <div class="log">${log || '点开始，扣下第一次扳机……'}</div>
+      `;
+      $('#go', el).onclick = () => {
+        if (active) {
+          if (shots >= 5) return bust();
+          shots++;
+          if (shots === bullet + 1) return bust();
+          mult *= 2;
+          log += `\n第 ${shots} 发：空弹！倍率 → ×${mult}`;
+          return draw();
+        }
+        if (!spend(100, '俄罗斯轮盘押注')) return;
+        bullet = randInt(0,5); shots = 1; mult = 2; active = true;
+        log = '🎯 押注 100，第 1 发空弹，倍率 ×2';
+        if (bullet === 0) return bust();
+        draw();
+      };
+      $('#cash', el).onclick = () => {
+        if (!active) return;
+        const got = earnCoin('roulette', 100 * mult, `轮盘 ×${mult} 收手`);
+        log += `\n💰 收手！拿走 ${got} 币`;
+        active = false; mult = 1; shots = 0;
+        draw();
+      };
+    };
+    const bust = () => {
+      log += `\n💥 砰！第 ${shots + 1} 发是子弹…… 100 币没了`;
+      active = false; mult = 1; shots = 0;
+      toast('💥 轮盘爆了', 'bad', '💀');
+      draw();
+    };
+    draw();
+  },
+});
+
+/* ==================== 2. 命运硬币 ==================== */
+GAMES.push({
+  id: 'coin', emoji: '🪙', name: '命运硬币', desc: '连猜 8 次翻倍',
+  render(el){
+    let streak = 0, mult = 1, active = false, log = '';
+    const draw = () => {
+      el.innerHTML = `
+        <div class="info">连续猜硬币，每猜对一次倍率 ×2。<br>第 3、6 次可「锁定一半」退出。猜错清零。</div>
+        <div class="big">${active ? '×' + mult : '准备开始'}</div>
+        <div class="row center">
+          <button class="btn gold" id="st" ${active ? 'disabled' : ''}>🪙 押注 50 币开始</button>
+          <button class="btn" id="h" ${active ? '' : 'disabled'}>猜正</button>
+          <button class="btn" id="t" ${active ? '' : 'disabled'}>猜反</button>
+          <button class="btn sec" id="lk" ${active && streak >= 3 ? '' : 'disabled'}>🔒 锁定 ×${Math.max(1, Math.floor(mult/2))}</button>
+        </div>
+        <div class="log">${log || '押上 50 币，开始猜硬币……'}</div>
+      `;
+      $('#st', el).onclick = () => {
+        if (!spend(50, '命运硬币押注')) return;
+        streak = 0; mult = 1; active = true;
+        log = '🪙 押注 50，开始！';
+        draw();
+      };
+      $('#h', el).onclick = () => flip('H');
+      $('#t', el).onclick = () => flip('T');
+      $('#lk', el).onclick = () => {
+        if (!active || streak < 3) return;
+        const lm = Math.max(1, Math.floor(mult/2));
+        const got = earnCoin('coin', 50 * lm, `硬币锁定 ×${lm}`);
+        log += `\n🔒 锁定一半，拿走 ${got} 币`;
+        active = false; mult = 1; streak = 0;
+        draw();
+      };
+    };
+    const flip = guess => {
+      if (!active) return;
+      const result = Math.random() < 0.5 ? 'H' : 'T';
+      if (result === guess) {
+        streak++; mult *= 2;
+        log += `\n第 ${streak} 次：${result === 'H' ? '正' : '反'}面，猜对！×${mult}`;
+        if (streak === 8) {
+          const got = earnCoin('coin', 50 * mult, `硬币 8 连中 ×${mult}`);
+          log += `\n🎉 8 连中！+${got} 币`;
+          active = false; mult = 1; streak = 0;
+        }
+      } else {
+        log += `\n第 ${streak + 1} 次：${result === 'H' ? '正' : '反'}面，猜错，清零！`;
+        active = false; mult = 1; streak = 0;
+        toast('🪙 猜错了，清零', 'bad', '💀');
+      }
+      draw();
+    };
+    draw();
+  },
+});
+
+/* ==================== 3. 老虎机 ==================== */
+GAMES.push({
+  id: 'slot', emoji: '🎰', name: '猪猪老虎机', desc: '三滚轮抽大奖', hot: true,
+  render(el){
+    const SYMS = ['🍒', '🍋', '🍊', '🍇', '💎', '7️⃣'];
+    const COST = 50;
+    let reels = ['🍒', '🍋', '🍊'], log = '', spinning = false;
+    const draw = () => {
+      el.innerHTML = `
+        <div class="info">花费 <b>50 币</b>转一次。三符号全同即中奖：<br>普通 ×5 · 💎 ×10 · <b>7️⃣ ×20</b> · 任意两同 ×1.5</div>
+        <div class="reels">${reels.map(s => `<div class="reel">${s}</div>`).join('')}</div>
+        <div class="row center"><button class="btn gold" id="sp" ${spinning ? 'disabled' : ''}>🎰 转动（50 币）</button></div>
+        <div class="log">${log || '点击转动试试手气……'}</div>
+      `;
+      $('#sp', el).onclick = () => {
+        if (spinning) return;
+        if (!spend(50, '老虎机')) return;
+        spinning = true;
+        let ticks = 0;
+        const iv = setInterval(() => {
+          reels = reels.map(() => pick(SYMS));
+          $$('.reel', el).forEach((r, i) => { r.textContent = reels[i]; r.classList.remove('win'); });
+          if (++ticks > 14) {
+            clearInterval(iv);
+            const a = reels[0], b = reels[1], c = reels[2];
+            let mul = 0, label = '';
+            if (a === b && b === c) {
+              if (a === '7️⃣') { mul = 20; label = '🎉 三个7！'; }
+              else if (a === '💎') { mul = 10; label = '💎 三个钻石！'; }
+              else { mul = 5; label = '✨ 三个相同！'; }
+            } else if (a === b || b === c || a === c) { mul = 1.5; label = '两个相同'; }
+            if (mul > 0) {
+              const got = earnCoin('slot', Math.floor(COST * mul), `老虎机 ${label}`);
+              log = `<span class="ok">${label} +${got} 币</span>`;
+              if (mul >= 5) $$('.reel', el).forEach(r => r.classList.add('win'));
+            } else {
+              log = `<span class="bad">没中……再来一次</span>`;
+            }
+            spinning = false;
+            draw();
+          }
+        }, 65);
+      };
+    };
+    draw();
+  },
+});
+
+/* ==================== 4. 猜数字 ==================== */
+GAMES.push({
+  id: 'guess', emoji: '🔢', name: '猪猪猜数字', desc: '7 次内猜中 1~100', new: true,
+  render(el){
+    let target = randInt(1,100), tries = 0;
+    const MAX = 7;
+    let log = '';
+    const draw = () => {
+      el.innerHTML = `
+        <div class="info">猜 1~100，<b>7 次机会</b>。剩的次数越多奖励越高。<br>猜不花钱，换新一局 30 币。</div>
+        <div class="big">${tries} / ${MAX}</div>
+        <div class="row center">
+          <input class="inp" id="g" type="number" min="1" max="100" placeholder="数字">
+          <button class="btn gold" id="try">猜！</button>
+          <button class="btn sec" id="new">换一局（30币）</button>
+        </div>
+        <div class="log">${log || '输入数字，点击「猜！」'}</div>
+      `;
+      $('#g', el).addEventListener('keydown', e => { if (e.key === 'Enter') $('#try', el).click(); });
+      $('#try', el).onclick = () => {
+        const v = parseInt($('#g', el).value);
+        if (!v || v < 1 || v > 100) { log = '<span class="bad">请输入 1~100</span>'; return draw(); }
+        tries++;
+        if (v === target) {
+          const left = MAX - tries;
+          const got = earnCoin('guess', 30 + left * 45, `猜数字 ${tries} 次猜中`);
+          log = `<span class="ok">🎉 猜中！${tries} 次，+${got} 币</span>`;
+          tries = 0; target = randInt(1,100);
+        } else if (tries >= MAX) {
+          log = `<span class="bad">😢 次数用完，答案是 ${target}</span>`;
+          tries = 0; target = randInt(1,100);
+        } else {
+          log = v < target ? '⬆️ 小了' : '⬇️ 大了';
+        }
+        draw();
+      };
+      $('#new', el).onclick = () => {
+        if (!spend(30, '猜数字换局')) return;
+        tries = 0; target = randInt(1,100);
+        log = '新一局开始！';
+        draw();
+      };
+    };
+    draw();
+  },
+});
+
+/* ==================== 5. 猜拳 ==================== */
+GAMES.push({
+  id: 'rps', emoji: '✊', name: '猪猪猜拳', desc: '三局两胜连胜有奖', new: true,
+  render(el){
+    const MOVES = [
+      { k: 'rock', e: '✊', n: '石头' },
+      { k: 'paper', e: '✋', n: '布' },
+      { k: 'scissors', e: '✌️', n: '剪刀' },
+    ];
+    const BEATS = { rock: 'scissors', paper: 'rock', scissors: 'paper' };
+    let hp = 3, cp = 3, streak = 0, log = '';
+    const draw = () => {
+      el.innerHTML = `
+        <div class="info">和猪猪三局两胜。赢了累积连胜，连胜越高奖励越多。<br>输一局连胜清零。</div>
+        <div class="row center" style="justify-content:space-between;padding:0 8px;font-weight:700;">
+          <span>我 ❤️×${hp}</span><span>猪猪 ❤️×${cp}</span><span>连胜 ×${streak}</span>
+        </div>
+        <div class="row center">${MOVES.map(m => `<button class="btn" data-m="${m.k}">${m.e} ${m.n}</button>`).join('')}</div>
+        <div class="log">${log || '出拳吧！'}</div>
+      `;
+      $$('[data-m]', el).forEach(b => {
+        b.onclick = () => {
+          const pm = b.dataset.m;
+          const cm = pick(MOVES).k;
+          const pmE = MOVES.find(x => x.k === pm).e;
+          const cmE = MOVES.find(x => x.k === cm).e;
+          let r = '';
+          if (pm === cm) r = '平局';
+          else if (BEATS[pm] === cm) { r = '你赢'; cp--; }
+          else { r = '猪猪赢'; hp--; }
+          log = `我 ${pmE} vs 猪猪 ${cmE} · ${r}`;
+          if (hp <= 0) {
+            log += ' · <span class="bad">猪猪胜，连胜清零</span>';
+            streak = 0; hp = 3; cp = 3;
+          } else if (cp <= 0) {
+            streak++;
+            const got = earnCoin('rps', 80 * streak, `猜拳 ${streak} 连胜`);
+            log += ` · <span class="ok">你赢了！+${got} 币</span>`;
+            hp = 3; cp = 3;
+          }
+          draw();
+        };
+      });
+    };
+    draw();
+  },
+});
+
+/* ==================== 6. 幸运转盘 ==================== */
+GAMES.push({
+  id: 'wheel', emoji: '🎡', name: '幸运大转盘', desc: '100 币转一次', new: true,
+  render(el){
+    const SECTORS = [
+      { v: 0, l: '谢谢惠顾' }, { v: 50, l: '50 币' },
+      { v: 0, l: '再试一次' }, { v: 100, l: '100 币' },
+      { v: 0, l: '谢谢惠顾' }, { v: 250, l: '250 币' },
+      { v: 0, l: '谢谢惠顾' }, { v: 500, l: '500 币' },
+      { v: 0, l: '再试一次' }, { v: 1000, l: '1000 币！' },
+    ];
+    let spinning = false, log = '祝你好运！';
+    el.innerHTML = `
+      <div class="info">花费 <b>100 币</b>转一次。10 扇区随机停。<br>大奖 1000 币，概率低但常出。</div>
+      <div class="big" id="res">🎡 点击下方按钮</div>
+      <div class="row center"><button class="btn gold" id="sp">🎡 转动（100 币）</button></div>
+      <div class="log" id="lg">${log}</div>
+    `;
+    $('#sp', el).onclick = () => {
+      if (spinning) return;
+      if (!spend(100, '幸运转盘')) return;
+      spinning = true;
+      const btn = $('#sp', el); btn.disabled = true;
+      const res = $('#res', el), lg = $('#lg', el);
+      let ticks = 0;
+      const iv = setInterval(() => {
+        res.textContent = pick(SECTORS).l;
+        if (++ticks > 18) {
+          clearInterval(iv);
+          const s = pick(SECTORS);
+          res.textContent = s.l;
+          if (s.v > 0) {
+            const got = earnCoin('wheel', s.v, `幸运转盘 ×${s.v/100}`);
+            lg.innerHTML = `<span class="ok">中奖！+${got} 币</span>`;
+          } else {
+            lg.innerHTML = `<span class="bad">谢谢惠顾，再来一次</span>`;
+          }
+          spinning = false; btn.disabled = false;
+        }
+      }, 80);
+    };
+  },
+});
+
+/* ==================== 7. 双色球 ==================== */
+const LOTTO_COST = 100;
+const LOTTO_INTERVAL = 5 * 60 * 1000;
+function pickNums(){
+  const s = new Set();
+  while (s.size < 6) s.add(randInt(1,33));
+  return [...s].sort((a,b) => a - b);
+}
+function ensureLotto(){
+  if (!state.bullseye) state.bullseye = { nums: [], issueAt: Date.now() + LOTTO_INTERVAL, myNums: [], lastResult: null, jackpot: 0 };
+  if (Date.now() > state.bullseye.issueAt) {
+    const newNums = pickNums();
+    if (state.bullseye.myNums && state.bullseye.myNums.length === 6) {
+      const hit = state.bullseye.myNums.filter(n => newNums.includes(n)).length;
+      let prize = 0;
+      if (hit === 3) prize = 300;
+      else if (hit === 4) prize = 1200;
+      else if (hit === 5) prize = 8000;
+      else if (hit === 6) prize = 100000 + state.bullseye.jackpot;
+      state.bullseye.lastResult = { nums: newNums, my: state.bullseye.myNums.slice(), hit, prize };
+      if (prize > 0) { addCoin(prize, `双色球中 ${hit} 个`); toast(`🎱 双色球中 ${hit} 个！+${prize} 币`, 'big', '🎉'); }
+      else toast(`🎱 双色球开奖，中了 ${hit} 个，无奖`, 'bad', '😢');
+    } else {
+      state.bullseye.lastResult = { nums: newNums, my: [], hit: 0, prize: 0 };
+    }
+    state.bullseye.nums = newNums;
+    state.bullseye.myNums = [];
+    state.bullseye.issueAt = Date.now() + LOTTO_INTERVAL;
+    state.bullseye.jackpot += 500;
+    save();
+  }
+  if (state.bullseye.nums.length !== 6) state.bullseye.nums = pickNums();
+}
+GAMES.push({
+  id: 'lotto', emoji: '🎱', name: '猪猪双色球', desc: '每 5 分钟开奖', new: true,
+  render(el){
+    let iv = null;
+    const draw = () => {
+      ensureLotto();
+      const B = state.bullseye;
+      const remain = Math.max(0, B.issueAt - Date.now());
+      const mm = Math.floor(remain/60000), ss = Math.floor(remain%60000/1000);
+      const myNumsHtml = Array.from({length: 6}, (_, i) => {
+        const n = B.myNums[i];
+        return n
+          ? `<span class="die" style="width:44px;height:44px;font-size:1.1rem;cursor:default;">${n}</span>`
+          : `<span class="die" style="width:44px;height:44px;font-size:1.1rem;cursor:default;opacity:.35;">?</span>`;
+      }).join('');
+      const drawHtml = B.nums.map(n => `<span class="die" style="width:38px;height:38px;font-size:.95rem;cursor:default;">${n}</span>`).join('');
+      let resultHtml = '';
+      if (B.lastResult) {
+        const r = B.lastResult;
+        resultHtml = `<div class="info"><strong>上期开奖：</strong>${r.nums.join(' ')}${r.my.length ? ` · 你的号码：${r.my.join(' ')} · 中了 <b>${r.hit}</b> 个${r.prize ? ` · 奖金 <b>+${r.prize}</b>` : ''}` : ''}</div>`;
+      }
+      el.innerHTML = `
+        <div class="info">每 <b>5 分钟</b>一期，猜中 3 个就有奖。<br>
+          3 个 = 300 · 4 个 = 1200 · 5 个 = 8000 · 6 个 = 100000 + 彩池<br>
+          彩池当前：<b>${B.jackpot}</b> 币</div>
+        <div style="text-align:center;font-size:.85rem;color:var(--dim);margin:.4rem 0;">距离开奖 <b style="color:var(--acc);font-size:1.1rem;">${mm}:${String(ss).padStart(2,'0')}</b></div>
+        <div style="text-align:center;font-size:.78rem;color:var(--dim);margin-top:.8rem;">本期开奖号码</div>
+        <div class="dice-row">${drawHtml}</div>
+        <div style="text-align:center;font-size:.78rem;color:var(--dim);margin-top:.4rem;">我的号码</div>
+        <div class="dice-row">${myNumsHtml}</div>
+        <div class="row center">
+          <button class="btn gold" id="buy" ${B.myNums.length === 6 ? 'disabled' : ''}>🎱 花 ${LOTTO_COST} 币随机选 6 个号</button>
+          <button class="btn sec" id="clr">清空号码</button>
+        </div>
+        <div style="font-size:.7rem;color:var(--dim);text-align:right;">※ 每期开奖后号码会重置</div>
+        ${resultHtml}
+      `;
+      $('#buy', el).onclick = () => {
+        if (B.myNums.length === 6) return;
+        if (!spend(LOTTO_COST, '双色球选号')) return;
+        B.myNums = pickNums(); save();
+        toast('🎱 号码已选好，等开奖吧', 'ok', '🍀');
+        draw();
+      };
+      $('#clr', el).onclick = () => { B.myNums = []; save(); draw(); };
+    };
+    draw();
+    iv = setInterval(() => {
+      if (!document.body.contains(el)) { clearInterval(iv); return; }
+      draw();
+    }, 1000);
+    currentCleanup = () => clearInterval(iv);
+  },
+});
+
+/* ==================== 8. 繁育实验室 ==================== */
+const PIG_SPECIES = [
+  { name: '小香猪', emoji: '🐷', rar: 1 },
+  { name: '黑毛猪', emoji: '🐗', rar: 1 },
+  { name: '花猪', emoji: '🐽', rar: 2 },
+  { name: '金猪', emoji: '🐖', rar: 3 },
+  { name: '忍者猪', emoji: '🥷', rar: 3 },
+  { name: '龙猪', emoji: '🐉', rar: 4 },
+  { name: '星尘猪', emoji: '✨', rar: 5 },
+  { name: '猪王', emoji: '👑', rar: 5 },
+];
+const PIG_ADJ = ['迷你', '巨大', '发光', '忧郁', '暴躁', '优雅', '肥宅', '神秘', '皇家', '双头', '彩虹', '透明', '机械', '幽灵', '黄金', '慵懒', '中二', '社恐'];
+const PIG_COLORS = ['#ff99bb','#ffcc66','#88cc88','#88aaff','#cc88ff','#ff8888','#88dddd','#ccaa88','#ffb000','#c8f'];
+function makePig(species, adj, color, mut){
+  const rar = Math.min(6, (species.rar || 1) + (mut ? 1 : 0) + (adj && ['彩虹','黄金','星尘','龙'].some(k => adj.includes(k)) ? 1 : 0));
+  return {
+    id: 'pig-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
+    species: species.name, emoji: species.emoji, adj, color, rar,
+    born: Date.now(),
+    stats: { size: randInt(1,99), speed: randInt(1,99), luck: randInt(1,99), power: randInt(1,99) }
+  };
+}
+function defaultPigs(){
+  return [
+    makePig(PIG_SPECIES[0], pick(PIG_ADJ), pick(PIG_COLORS)),
+    makePig(PIG_SPECIES[1], pick(PIG_ADJ), pick(PIG_COLORS)),
+  ];
+}
+if (!state.pigs || state.pigs.length < 2) state.pigs = defaultPigs();
+function breedPigs(p1, p2){
+  const sp = Math.random() < 0.5 ? PIG_SPECIES.find(s => s.name === p1.species) : PIG_SPECIES.find(s => s.name === p2.species);
+  let adj = Math.random() < 0.5 ? p1.adj : p2.adj;
+  let mut = false;
+  if (Math.random() < 0.18) { adj = pick(PIG_ADJ); mut = true; }
+  const color = Math.random() < 0.5 ? p1.color : p2.color;
+  const baby = makePig(sp || PIG_SPECIES[0], adj, color, mut);
+  baby.stats.size = Math.round((p1.stats.size + p2.stats.size) / 2 + rand(-12,12));
+  baby.stats.speed = Math.round((p1.stats.speed + p2.stats.speed) / 2 + rand(-12,12));
+  baby.stats.luck = Math.round((p1.stats.luck + p2.stats.luck) / 2 + rand(-12,12));
+  baby.stats.power = Math.round((p1.stats.power + p2.stats.power) / 2 + rand(-12,12));
+  ['size','speed','luck','power'].forEach(k => { baby.stats[k] = Math.max(1, Math.min(99, baby.stats[k])); });
+  if (mut) baby.stats.luck = Math.min(99, baby.stats.luck + 15);
+  return baby;
+}
+GAMES.push({
+  id: 'breed', emoji: '🧬', name: '繁育实验室', desc: '育出离谱猪', hot: true,
+  render(el){
+    let selection = [];
+    let log = '选两只猪，点击交配试试看……';
+    const draw = () => {
+      const pigsHtml = state.pigs.slice(-40).map(p => {
+        const sel = selection.includes(p.id) ? 'sel' : '';
+        return `<div class="pig-card r${p.rar} ${sel}" data-id="${p.id}">
+          <span class="pr">${'★'.repeat(p.rar)}</span>
+          <div class="pe">${p.emoji}</div>
+          <div class="pn" style="color:${p.color}">${p.adj}${p.species}</div>
+          <div class="ps">体${p.stats.size} 速${p.stats.speed}<br>运${p.stats.luck} 力${p.stats.power}</div>
+        </div>`;
+      }).join('');
+      el.innerHTML = `
+        <div class="info">选 <b>两只猪</b>交配，后代随机继承父母特征，有概率<b>变异</b>出稀有组合。<br>每次交配 <b>150 币</b>。已有 <b>${state.pigs.length}</b> 只猪。</div>
+        <div class="pig-grid" id="pigGrid">${pigsHtml}</div>
+        <div class="row center">
+          <button class="btn gold" id="go" ${selection.length === 2 ? '' : 'disabled'}>🧬 交配（150 币）</button>
+          <button class="btn sec" id="reset">清空选择</button>
+          <button class="btn dan" id="clr">重置猪圈（保留前两只）</button>
+        </div>
+        <div class="log">${log}</div>
+      `;
+      $('#pigGrid', el).onclick = e => {
+        const card = e.target.closest('.pig-card');
+        if (!card) return;
+        const id = card.dataset.id;
+        if (selection.includes(id)) selection = selection.filter(x => x !== id);
+        else {
+          if (selection.length >= 2) selection.shift();
+          selection.push(id);
+        }
+        draw();
+      };
+      $('#go', el).onclick = () => {
+        if (selection.length !== 2) return;
+        if (!spend(150, '繁育')) return;
+        const p1 = state.pigs.find(x => x.id === selection[0]);
+        const p2 = state.pigs.find(x => x.id === selection[1]);
+        if (!p1 || !p2) return;
+        const baby = breedPigs(p1, p2);
+        state.pigs.push(baby);
+        if (state.pigs.length > 200) state.pigs = state.pigs.slice(-200);
+        save();
+        const mutText = baby.rar >= 5 ? '✨ 变异成功！' : (baby.rar >= 4 ? '🌟 稀有后代！' : '🐷 新猪诞生');
+        log = `<span class="big">${mutText}</span>\n${p1.adj}${p1.species} × ${p2.adj}${p2.species} → <b style="color:${baby.color}">${baby.adj}${baby.species}</b>（${'★'.repeat(baby.rar)}）`;
+        toast(`${mutText} ${baby.adj}${baby.species}`, baby.rar >= 5 ? 'big' : 'ok', baby.emoji);
+        if (baby.rar >= 5) addCoin(500, '稀有猪奖励');
+        selection = [];
+        draw();
+      };
+      $('#reset', el).onclick = () => { selection = []; draw(); };
+      $('#clr', el).onclick = () => {
+        if (!confirm('确定重置猪圈吗？只会保留前两只初始猪。')) return;
+        state.pigs = state.pigs.slice(0,2);
+        save(); draw(); toast('猪圈已重置', 'bad', '🗑️');
+      };
+    };
+    draw();
+  },
+});
+
+/* ==================== 9. 大逃杀 ==================== */
+const BATTLE_PIGS = ['🐷','🐖','🐗','🐽','🥷','👑','🐉','✨'];
+const BATTLE_EVENTS = [
+  { fn: p => { p.hp += 15; return `${p.name} 捡到药水 +15 HP`; } },
+  { fn: p => { p.hp -= 20; return `${p.name} 踩到陷阱 -20 HP`; } },
+  { fn: p => { p.hp += 8; return `${p.name} 吃到食物 +8 HP`; } },
+  { fn: p => { p.hp -= 30; return `${p.name} 被雷劈中 -30 HP`; } },
+  { fn: p => { p.atk += 8; return `${p.name} 进入狂暴 +8 ATK`; } },
+  { fn: p => { p.dodge += 10; return `${p.name} 提升闪避 +10`; } },
+  { fn: p => { p.hp += 5; return `${p.name} 喘了口气 +5 HP`; } },
+];
+GAMES.push({
+  id: 'battle', emoji: '⚔️', name: '猪猪大逃杀', desc: '8 猪混战押注', hot: true,
+  render(el){
+    const COST = 80;
+    let pigs = [];
+    let iv = null;
+    let battleId = null;
+    const initPigs = () => {
+      pigs = [];
+      for (let i = 0; i < 8; i++) {
+        pigs.push({
+          id: 'b' + i, name: `选手${i+1}`, emoji: pick(BATTLE_PIGS),
+          hp: 100, maxHp: 100, atk: randInt(8,15), dodge: randInt(0,15), alive: true,
+        });
+      }
+    };
+    const draw = () => {
+      const grid = pigs.map(p => {
+        const pct = Math.max(0, p.hp / p.maxHp * 100);
+        return `<div class="pig-card" data-id="${p.id}" style="cursor:default;opacity:${p.alive ? 1 : .4}">
+          <div class="pe">${p.emoji}</div>
+          <div class="pn">${p.name}${p.alive ? '' : '(淘汰)'}</div>
+          <div class="ps">HP ${Math.max(0,p.hp)}/${p.maxHp}<br>ATK ${p.atk} 闪避 ${p.dodge}%</div>
+          <div class="hpbar"><div style="width:${pct}%;background:${pct > 60 ? 'var(--ok)' : pct > 30 ? 'var(--gold)' : 'var(--bad)'}"></div></div>
+        </div>`;
+      }).join('');
+      el.innerHTML = `
+        <div class="info">8 只猪混战，每回合触发随机事件 + 互相攻击，活到最后赢。<br>押注 <b>80 币</b>，押中赢家获得 <b>600 币 × 天气倍率</b>。</div>
+        <div class="pig-grid" id="pigsGrid">${grid}</div>
+        <div class="row center">
+          <select class="inp" id="pk" style="width:170px">
+            <option value="">选择你押的猪</option>
+            ${pigs.map(p => `<option value="${p.id}">${p.emoji} ${p.name}</option>`).join('')}
+          </select>
+          <button class="btn gold" id="start" ${battleId ? 'disabled' : ''}>⚔️ 开始（80 币）</button>
+          <button class="btn sec" id="reset">重置</button>
+        </div>
+        <div class="log" id="blog">选择一只猪下注，然后开始比赛！</div>
+      `;
+      $('#pigsGrid', el).onclick = e => {
+        const card = e.target.closest('.pig-card');
+        if (!card) return;
+        const sel = $('#pk', el);
+        if (sel) sel.value = card.dataset.id;
+      };
+      $('#start', el).onclick = startBattle;
+      $('#reset', el).onclick = () => {
+        if (iv) { clearInterval(iv); iv = null; }
+        battleId = null; initPigs(); draw();
+      };
+    };
+    const startBattle = () => {
+      const betId = $('#pk', el).value;
+      if (!betId) { toast('请先选择你押的猪', 'bad', '🎯'); return; }
+      if (!spend(COST, '大逃杀押注')) return;
+      pigs.forEach(p => { p.hp = p.maxHp; p.alive = true; });
+      battleId = betId;
+      const logEl = $('#blog', el);
+      logEl.innerHTML = `⚔️ 比赛开始！你押了 <b>${pigs.find(p => p.id === betId).name}</b><br>`;
+      $('#start', el).disabled = true;
+      iv = setInterval(() => {
+        if (!document.body.contains(el)) { clearInterval(iv); iv = null; return; }
+        const alive = pigs.filter(p => p.alive);
+        if (alive.length <= 1) { endBattle(betId); return; }
+        alive.forEach(p => {
+          const ev = pick(BATTLE_EVENTS);
+          const msg = ev.fn(p);
+          const l = $('#blog', el);
+          if (l) l.innerHTML += `<span class="${msg.includes('-') ? 'bad' : 'ok'}">${msg}</span><br>`;
+        });
+        alive.forEach(p => {
+          const targets = alive.filter(x => x !== p);
+          if (!targets.length) return;
+          const tgt = pick(targets);
+          if (Math.random() * 100 < tgt.dodge) return;
+          const dmg = Math.max(1, p.atk - randInt(0,5));
+          tgt.hp -= dmg;
+          const l = $('#blog', el);
+          if (l) l.innerHTML += `${p.emoji} 攻击 ${tgt.emoji}，造成 ${dmg} 伤害<br>`;
+        });
+        pigs.forEach(p => { if (p.hp <= 0) { p.alive = false; p.hp = 0; } });
+        pigs.forEach(p => {
+          const card = el.querySelector(`.pig-card[data-id="${p.id}"]`);
+          if (!card) return;
+          const pct = Math.max(0, p.hp / p.maxHp * 100);
+          card.style.opacity = p.alive ? 1 : .4;
+          const bar = card.querySelector('.hpbar > div');
+          if (bar) { bar.style.width = pct + '%'; bar.style.background = pct > 60 ? 'var(--ok)' : pct > 30 ? 'var(--gold)' : 'var(--bad)'; }
+          const stats = card.querySelector('.ps');
+          if (stats) stats.innerHTML = `HP ${Math.max(0,p.hp)}/${p.maxHp}<br>ATK ${p.atk} 闪避 ${p.dodge}%`;
+          const nm = card.querySelector('.pn');
+          if (nm) nm.textContent = `${p.name}${p.alive ? '' : '(淘汰)'}`;
+        });
+        const l2 = $('#blog', el);
+        if (l2 && l2.innerHTML.length > 3000) l2.innerHTML = l2.innerHTML.slice(-2500);
+        if (l2) l2.scrollTop = l2.scrollHeight;
+        if (alive.length <= 1) endBattle(betId);
+      }, 900);
+    };
+    const endBattle = betId => {
+      if (iv) { clearInterval(iv); iv = null; }
+      battleId = null;
+      const winner = pigs.find(p => p.alive);
+      const log = $('#blog', el);
+      if (!winner) {
+        if (log) log.innerHTML += '<br>⚔️ 全军覆没！没有胜者。';
+        toast('全军覆没', 'bad', '💀');
+        return;
+      }
+      if (winner.id === betId) {
+        const payout = Math.floor(600 * weatherMul('battle'));
+        addCoin(payout, `大逃杀押中 ${winner.name}`);
+        if (log) log.innerHTML += `<br><span class="big">🏆 ${winner.emoji} ${winner.name} 获胜！押中 +${payout} 币！</span>`;
+        toast(`🏆 押中 ${winner.name}！+${payout} 币`, 'big', '🎉');
+      } else {
+        if (log) log.innerHTML += `<br><span class="bad">😭 ${winner.emoji} ${winner.name} 获胜，你押的猪败了……</span>`;
+        toast(`😭 押错，${winner.name} 赢了`, 'bad', '💔');
+      }
+      $('#start', el).disabled = false;
+    };
+    initPigs();
+    draw();
+  },
+});
+
+/* ==================== 10. 大冒险 ==================== */
+const ADV_EVENTS = [
+  { w: 15, fn: () => { const n = randInt(50,180); addCoin(n, '冒险获得'); return { e: '💰', t: `路边捡到 ${n} 币！` }; } },
+  { w: 12, fn: () => { const n = randInt(30,120); addCoin(-n, '冒险消耗'); return { e: '🍖', t: `请猪猪吃饭花了 ${n} 币` }; } },
+  { w: 10, fn: () => ({ e: '🐗', t: '遇到野生 S 怪，但它跑了' }) },
+  { w: 8, fn: () => ({ e: '🎁', t: '打开宝箱获得 200 币', coin: 200 }) },
+  { w: 8, fn: () => ({ e: '🌫️', t: '走进浓雾，什么也没找到' }) },
+  { w: 6, fn: () => ({ e: '⚔️', t: '被野猪围攻，但它们突然散开了' }) },
+  { w: 6, fn: () => ({ e: '🌟', t: '看到流星划过，许了个愿' }) },
+  { w: 5, fn: () => ({ e: '🐷', t: '一只可爱的猪猪加入了你的队伍', pig: true }) },
+  { w: 4, fn: () => { const n = randInt(500,1500); return { e: '👑', t: `神秘的猪王赏赐你 ${n} 币！`, coin: n }; } },
+  { w: 4, fn: () => ({ e: '💎', t: '发现一颗水晶，太重搬不动' }) },
+  { w: 3, fn: () => ({ e: '🌀', t: '被传送门吸走，醒来还在原地' }) },
+  { w: 2, fn: () => ({ e: '✨', t: '传说中的彩虹猪对你眨了眨眼' }) },
+];
+const ADV_TOTAL_W = ADV_EVENTS.reduce((a,b) => a + b.w, 0);
+GAMES.push({
+  id: 'adventure', emoji: '🗺️', name: '猪猪大冒险', desc: '文字跑团随机事件',
+  render(el){
+    const COST = 60;
+    let log = '旅行的故事会显示在这里……';
+    let result = { e: '🗺️', n: '准备好了吗？', d: '点击出发' };
+    const draw = () => {
+      el.innerHTML = `
+        <div class="info">花费 <b>${COST} 币</b>出发。随机走 3~7 步，每步触发一段事件。<br>
+          ${weatherMul('adventure') > 1 ? `<span style="color:var(--ok)">当前天气本游戏收益 ×${weatherMul('adventure').toFixed(2)}！</span>` : ''}</div>
+        <div class="res"><div class="em">${result.e}</div><div class="nm">${result.n}</div><div class="ds">${result.d}</div></div>
+        <div class="row center"><button class="btn gold" id="go">🗺️ 出发（${COST} 币）</button></div>
+        <div class="log" id="lg">${log}</div>
+      `;
+      $('#go', el).onclick = () => {
+        if (!spend(COST, '大冒险')) return;
+        const steps = randInt(3,7);
+        const lg = $('#lg', el);
+        lg.innerHTML = `🚶 踏上旅途，预计走 ${steps} 步……<br>`;
+        let i = 0;
+        const step = () => {
+          if (!document.body.contains(el)) return;
+          if (i >= steps) {
+            result = { e: '🏠', n: '冒险结束', d: '你回到了家，猪猪在门口迎接你' };
+            draw();
+            return;
+          }
+          i++;
+          let r = Math.random() * ADV_TOTAL_W;
+          let ch = ADV_EVENTS[0];
+          for (const e of ADV_EVENTS) { r -= e.w; if (r <= 0) { ch = e; break; } }
+          const res = ch.fn();
+          if (res.coin) {
+            const got = earnCoin('adventure', res.coin, '冒险奖励');
+            lg.innerHTML += `<span style="color:var(--acc)">第 ${i} 步</span> ${res.e} ${res.t}（+${got}）<br>`;
+          } else if (res.pig) {
+            const baby = makePig(pick(PIG_SPECIES), pick(PIG_ADJ), pick(PIG_COLORS), Math.random() < 0.5);
+            state.pigs.push(baby); save();
+            lg.innerHTML += `<span style="color:var(--acc)">第 ${i} 步</span> ${res.e} ${res.t} <b style="color:${baby.color}">${baby.adj}${baby.species}</b><br>`;
+            toast(`🐷 加入新猪：${baby.adj}${baby.species}`, 'ok', baby.emoji);
+          } else {
+            lg.innerHTML += `<span style="color:var(--acc)">第 ${i} 步</span> ${res.e} ${res.t}<br>`;
+          }
+          lg.scrollTop = lg.scrollHeight;
+          setTimeout(step, 650);
+        };
+        step();
+      };
+    };
+    draw();
+  },
+});
+
+/* ==================== 11. 炼金锅 ==================== */
+const ALCHEMY_ITEMS = [
+  { id: 'grass', n: '猪草', e: '🌿' }, { id: 'stone', n: '石头', e: '🪨' },
+  { id: 'water', n: '清水', e: '💧' }, { id: 'fire', n: '火种', e: '🔥' },
+  { id: 'bone', n: '骨头', e: '🦴' }, { id: 'feather', n: '羽毛', e: '🪶' },
+  { id: 'crystal', n: '水晶', e: '💎' }, { id: 'hair', n: '猪毛', e: '🧶' },
+  { id: 'coin', n: '金币', e: '🪙' }, { id: 'mushroom', n: '蘑菇', e: '🍄' },
+];
+const ALCHEMY_RECIPES = {
+  'grass+water': { e: '🧪', n: '活力药水', d: '猪猪喝下去更有精神了' },
+  'fire+water': { e: '💠', n: '蒸汽结晶', d: '冒着一丝丝白汽' },
+  'crystal+crystal': { e: '🔮', n: '共鸣水晶', d: '立即获得 800 币', reward: 800 },
+  'bone+feather': { e: '🦴', n: '远古残骸', d: '一只野生猪加入了猪圈', pig: true },
+  'coin+coin': { e: '💰', n: '金币堆', d: '立即获得 500 币', reward: 500 },
+  'hair+hair': { e: '🧶', n: '猪毛球', d: '无用的东西……但很可爱' },
+  'mushroom+fire': { e: '🍲', n: '蘑菇浓汤', d: '猪猪喝了很满足，获得 300 币', reward: 300 },
+  'grass+grass': { e: '🌱', n: '杂草丛', d: '猪猪吃了很开心' },
+  'water+water': { e: '💧', n: '纯净水', d: '喝了很清爽' },
+  'stone+stone': { e: '⛰️', n: '石堆', d: '看起来很结实' },
+  'crystal+fire': { e: '🔥', n: '烈焰水晶', d: '猪猪说：今天运势不错' },
+  'crystal+bone': { e: '💀', n: '远古水晶骨', d: '猪猪吓得给你 1000 币', reward: 1000 },
+  'feather+feather': { e: '🪽', n: '羽翼', d: '猪猪飘起来了' },
+  'mushroom+mushroom': { e: '🍄', n: '蘑菇森林', d: '一只猪猪从蘑菇里钻了出来', pig: true },
+};
+GAMES.push({
+  id: 'alchemy', emoji: '⚗️', name: '猪猪炼金锅', desc: '配方全靠试',
+  render(el){
+    let A = null, B = null;
+    let result = { e: '⚗️', n: '等待投入……', d: '先选材料吧' };
+    let log = `已发现配方 ${Object.keys(ALCHEMY_RECIPES).length} 个`;
+    const draw = () => {
+      const itemA = A ? ALCHEMY_ITEMS.find(i => i.id === A) : null;
+      const itemB = B ? ALCHEMY_ITEMS.find(i => i.id === B) : null;
+      el.innerHTML = `
+        <div class="info">丢两样东西进锅，看看会发生什么。每次 <b>80 币</b>。<br>
+          ${hasRareBoost('alchemy') ? '<span style="color:var(--ok)">浓雾天气：彩蛋配方概率提升！</span>' : '配方隐藏，全靠试。'}</div>
+        <div class="row center">
+          <div class="slot ${A ? 'on' : ''}" style="flex:1;height:70px;display:flex;flex-direction:column;justify-content:center;cursor:default;">
+            <span class="em">${itemA ? itemA.e : '?'}</span><span>${itemA ? itemA.n : '锅槽 A'}</span>
+          </div>
+          <div class="slot ${B ? 'on' : ''}" style="flex:1;height:70px;display:flex;flex-direction:column;justify-content:center;cursor:default;">
+            <span class="em">${itemB ? itemB.e : '?'}</span><span>${itemB ? itemB.n : '锅槽 B'}</span>
+          </div>
+        </div>
+        <div class="row center">
+          <button class="btn gold" id="go" ${A && B ? '' : 'disabled'}>⚗️ 投入（80 币）</button>
+          <button class="btn sec" id="clr">清空锅</button>
+        </div>
+        <div class="res"><div class="em">${result.e}</div><div class="nm">${result.n}</div><div class="ds">${result.d}</div></div>
+        <div class="slot-grid">${ALCHEMY_ITEMS.map(it => `<div class="slot ${A === it.id || B === it.id ? 'on' : ''}" data-id="${it.id}"><span class="em">${it.e}</span>${it.n}</div>`).join('')}</div>
+        <div class="log">${log}</div>
+      `;
+      $$('[data-id]', el).forEach(s => {
+        s.onclick = () => {
+          const id = s.dataset.id;
+          if (A === id) A = null;
+          else if (B === id) B = null;
+          else if (!A) A = id;
+          else if (!B) B = id;
+          else { A = B; B = id; }
+          draw();
+        };
+      });
+      $('#clr', el).onclick = () => { A = null; B = null; draw(); };
+      $('#go', el).onclick = () => {
+        if (!A || !B) return;
+        if (!spend(80, '炼金')) return;
+        const k1 = A + '+' + B, k2 = B + '+' + A;
+        let rec = ALCHEMY_RECIPES[k1] || ALCHEMY_RECIPES[k2];
+        if (!rec && hasRareBoost('alchemy') && Math.random() < 0.25) {
+          rec = ALCHEMY_RECIPES[pick(Object.keys(ALCHEMY_RECIPES))];
+        }
+        const A_n = ALCHEMY_ITEMS.find(i => i.id === A).n;
+        const B_n = ALCHEMY_ITEMS.find(i => i.id === B).n;
+        if (rec) {
+          result = { e: rec.e, n: rec.n, d: rec.d };
+          toast(`⚗️ 炼出【${rec.n}】`, 'big', rec.e);
+          if (rec.reward) addCoin(rec.reward, '炼金奖励');
+          if (rec.pig) {
+            const baby = makePig(pick(PIG_SPECIES), pick(PIG_ADJ), pick(PIG_COLORS), true);
+            state.pigs.push(baby); save();
+            toast(`🐷 加入新猪：${baby.adj}${baby.species}`, 'big', baby.emoji);
+          }
+          log = `${A_n}+${B_n} → ${rec.n}`;
+        } else {
+          const junks = [
+            { e: '🫧', n: '泡泡水', d: '什么都没发生' },
+            { e: '💨', n: '一缕烟', d: '材料消失了' },
+            { e: '💩', n: '猪猪的礼物', d: '你确定这能吃？' },
+          ];
+          const j = pick(junks);
+          result = { e: j.e, n: j.n, d: j.d };
+          log = `${A_n}+${B_n} → 失败`;
+        }
+        A = null; B = null;
+        draw();
+      };
+    };
+    draw();
+  },
+});
+
+/* ==================== 12. 扭蛋机 ==================== */
+GAMES.push({
+  id: 'gacha', emoji: '🥚', name: '猪猪扭蛋机', desc: '荒诞组合收集',
+  render(el){
+    const PIGS = ['🐷','🐖','🐗','🐽','🥷','👑','🐉','✨'];
+    const ADJ = ['发光','忧郁','暴躁','优雅','肥宅','神秘','皇家','双头','彩虹','透明','机械','幽灵','黄金','慵懒','迷你','巨大'];
+    const ACC = ['戴小礼帽','穿披风','拿雨伞','抱西瓜','踩滑板','拎灯笼','系铃铛','戴墨镜','背书包','扛大剑'];
+    const COST = 60;
+    if (!state.inventory.gacha) state.inventory.gacha = [];
+    let display = { e: '🥚', n: '扭蛋机待命中', d: '点下面按钮抽一发' };
+    const draw = () => {
+      const collected = state.inventory.gacha;
+      const list = collected.slice(-24).reverse().map(g => `<div class="slot on" style="cursor:default"><span class="em">${g.e}</span>${g.n}</div>`).join('');
+      el.innerHTML = `
+        <div class="info">每次 <b>${COST} 币</b>抽一只「形容词+猪+配饰」的离谱组合。<br>
+          已收集 <b>${collected.length}</b> 种${hasRareBoost('gacha') ? ' · <span style="color:var(--ok)">浓雾稀有加成中！</span>' : ''}。</div>
+        <div class="res"><div class="em" style="font-size:2.6rem">${display.e}</div><div class="nm">${display.n}</div><div class="ds">${display.d}</div></div>
+        <div class="row center">
+          <button class="btn gold" id="go">🥚 抽一发（${COST} 币）</button>
+          <button class="btn sec" id="clr">清空收藏</button>
+        </div>
+        <div style="font-size:.8rem;color:var(--dim);margin-top:.5rem;">我的收藏：</div>
+        <div class="slot-grid">${list || '<div style="color:var(--dim);font-size:.78rem;">还没有收藏……</div>'}</div>
+      `;
+      $('#go', el).onclick = () => {
+        if (!spend(COST, '扭蛋')) return;
+        let e, adj;
+        if (hasRareBoost('gacha') && Math.random() < 0.3) {
+          e = pick(['🐉','✨','👑']);
+          adj = pick(['彩虹','黄金','双头','神秘']);
+        } else {
+          e = pick(PIGS); adj = pick(ADJ);
+        }
+        const acc = pick(ACC);
+        const n = `${adj}的${e}${acc}`;
+        state.inventory.gacha.push({ e, n });
+        if (state.inventory.gacha.length > 150) state.inventory.gacha.shift();
+        save();
+        display = { e, n, d: '已收入收藏' };
+        toast(`🥚 抽到 ${n}`, 'ok', e);
+        draw();
+      };
+      $('#clr', el).onclick = () => {
+        if (!confirm('清空全部扭蛋收藏？')) return;
+        state.inventory.gacha = []; save(); draw();
+      };
+    };
+    draw();
+  },
+});
+
+/* ==================== 13. 骰子赌场 ==================== */
+GAMES.push({
+  id: 'yz', emoji: '🎯', name: '骰子赌场', desc: '5 骰重掷凑组合',
+  render(el){
+    const COST = 50;
+    let dice = [1,1,1,1,1];
+    let held = [false,false,false,false,false];
+    let left = 0, active = false, log = '';
+    const draw = () => {
+      el.innerHTML = `
+        <div class="info">掷 5 骰可重掷 2 次。点骰子可锁定。<br>三条 ×2 · 四条 ×4 · 葫芦 ×6 · 顺子 ×8 · 五同 ×20</div>
+        <div class="dice-row">${dice.map((d, i) => `<div class="die ${held[i] ? 'held' : ''}" data-i="${i}">${'⚀⚁⚂⚃⚄⚅'[d-1]}</div>`).join('')}</div>
+        <div class="big">${active ? '剩余重掷：' + left : '点击开始'}</div>
+        <div class="row center">
+          <button class="btn gold" id="st" ${active ? 'disabled' : ''}>🎯 开始（${COST} 币）</button>
+          <button class="btn" id="rl" ${active && left > 0 ? '' : 'disabled'}>🎲 重掷（${left}）</button>
+          <button class="btn grn" id="set" ${active ? '' : 'disabled'}>💰 结算</button>
+        </div>
+        <div class="log">${log || '点开始，押上 50 币。'}</div>
+      `;
+      $$('.die', el).forEach(d => {
+        d.onclick = () => {
+          if (!active) return;
+          const i = +d.dataset.i;
+          held[i] = !held[i];
+          draw();
+        };
+      });
+      $('#st', el).onclick = () => {
+        if (!spend(COST, '骰子赌场')) return;
+        dice = Array.from({length: 5}, () => randInt(1,6));
+        held = [false,false,false,false,false];
+        left = 2; active = true; log = '开始！';
+        draw();
+      };
+      $('#rl', el).onclick = () => {
+        if (!active || left <= 0) return;
+        for (let i = 0; i < 5; i++) if (!held[i]) dice[i] = randInt(1,6);
+        left--; draw();
+      };
+      $('#set', el).onclick = () => {
+        if (!active) return;
+        const counts = {};
+        dice.forEach(d => counts[d] = (counts[d] || 0) + 1);
+        const vals = Object.values(counts).sort((a,b) => b - a);
+        const sorted = [...dice].sort((a,b) => a - b);
+        let mul = 0, name = '';
+        if (vals[0] === 5) { mul = 20; name = '五同！'; }
+        else if (vals[0] === 4) { mul = 4; name = '四条'; }
+        else if (vals[0] === 3 && vals[1] === 2) { mul = 6; name = '葫芦'; }
+        else if (vals[0] === 3) { mul = 2; name = '三条'; }
+        else if (sorted.join('') === '12345' || sorted.join('') === '23456') { mul = 8; name = '顺子！'; }
+        if (mul > 0) {
+          const got = earnCoin('yz', COST * mul, `骰子 ${name} ×${mul}`);
+          log = `<span class="ok">${name} ${dice.join(' ')} → +${got} 币</span>`;
+        } else {
+          log = `<span class="bad">没凑出组合：${dice.join(' ')}</span>`;
+        }
+        active = false;
+        draw();
+      };
+    };
+    draw();
+  },
+});
+
+/* ==================== 14. 21 点 ==================== */
+GAMES.push({
+  id: 'bj', emoji: '🃏', name: '猪猪 21 点', desc: '对赌庄家猪',
+  render(el){
+    const COST = 80;
+    const suits = ['♠','♥','♦','♣'];
+    const mk = () => { const s = pick(suits), v = randInt(1,13); return { s, v, red: s === '♥' || s === '♦' }; };
+    const cv = c => c.v === 1 ? 11 : (c.v >= 11 ? 10 : c.v);
+    const total = h => {
+      let t = h.reduce((a, c) => a + cv(c), 0);
+      let aces = h.filter(c => c.v === 1).length;
+      while (t > 21 && aces > 0) { t -= 10; aces--; }
+      return t;
+    };
+    const html = (c, hid) => {
+      if (hid) return `<div class="pcard back">?</div>`;
+      const lb = c.v === 1 ? 'A' : (c.v === 11 ? 'J' : (c.v === 12 ? 'Q' : (c.v === 13 ? 'K' : c.v)));
+      return `<div class="pcard ${c.red ? 'red' : ''}"><div>${lb}</div><div class="suit">${c.s}</div></div>`;
+    };
+    let p = [], d = [], active = false, wins = 0, log = '点开始，和猪猪庄家对赌。';
+    const draw = () => {
+      el.innerHTML = `
+        <div class="info">对赌庄家。超过 21 点爆掉。<b>连续赢 3 把</b>有 +500 额外奖励。<br>每次 <b>${COST} 币</b>。当前天气 ×${weatherMul('bj').toFixed(2)}</div>
+        <div style="text-align:center;font-size:.8rem;color:var(--dim)">庄家（猪猪）</div>
+        <div class="dice-row">${d.map((c, i) => html(c, active && i === 1)).join('')}</div>
+        <div class="big">${d.length && !active ? total(d) : (d.length ? '?' : '-')}</div>
+        <div style="text-align:center;font-size:.8rem;color:var(--dim)">我</div>
+        <div class="dice-row">${p.map(c => html(c)).join('')}</div>
+        <div class="big" style="color:var(--ok)">${p.length ? total(p) : '-'}</div>
+        <div class="row center">
+          <button class="btn gold" id="st" ${active ? 'disabled' : ''}>🃏 开始（${COST} 币）</button>
+          <button class="btn" id="hit" ${active ? '' : 'disabled'}>要牌</button>
+          <button class="btn sec" id="stand" ${active ? '' : 'disabled'}>停牌</button>
+        </div>
+        <div class="log">${log}</div>
+      `;
+      $('#st', el).onclick = () => {
+        if (!spend(COST, '21 点')) return;
+        p = [mk(), mk()]; d = [mk(), mk()];
+        active = true; log = '你的回合，要牌或停牌。';
+        draw();
+        if (total(p) === 21) setTimeout(stand, 400);
+      };
+      $('#hit', el).onclick = () => {
+        if (!active) return;
+        p.push(mk());
+        if (total(p) > 21) {
+          active = false;
+          log = `<span class="bad">💥 爆了！${total(p)} 点，${COST} 币没了</span>`;
+          wins = 0; toast('💥 21 点爆了', 'bad', '💀');
+        }
+        draw();
+      };
+      $('#stand', el).onclick = stand;
+    };
+    const stand = () => {
+      if (!active) return;
+      active = false;
+      while (total(d) < 17) d.push(mk());
+      const pt = total(p), dt = total(d);
+      if (dt > 21 || pt > dt) {
+        let got = Math.floor(COST * 2 * weatherMul('bj'));
+        wins++;
+        if (wins >= 3) { got += 500; log = `<span class="ok">🏆 ${pt} vs ${dt} · +${got} 币（含 3 连胜 +500！）</span>`; wins = 0; }
+        else { log = `<span class="ok">✅ ${pt} vs ${dt} · +${got} 币</span>`; }
+        addCoin(got, '21点获胜');
+      } else if (pt === dt) {
+        log = `🤝 平局 ${pt} vs ${dt} · 退回 ${COST} 币`;
+        addCoin(COST, '21点平局');
+      } else {
+        log = `<span class="bad">😢 ${pt} vs ${dt} · ${COST} 币没了</span>`;
+        wins = 0;
+      }
+      draw();
+    };
+    draw();
+  },
+});
+
+/* ==================== 15. 恶作剧 ==================== */
+GAMES.push({
+  id: 'prank', emoji: '😜', name: '恶作剧系统', desc: '猪猪随机捣乱',
+  render(el){
+    const draw = () => {
+      el.innerHTML = `
+        <div class="info">猪猪每隔 <b>2~5 分钟</b>随机捣乱一次：偷币、送币、加滤镜、变色……<br>可手动触发，也可以清空计数。</div>
+        <div class="res"><div class="em">😜</div><div class="nm">已发生 ${state.pranks || 0} 次</div><div class="ds">上次：${state.lastPrank ? new Date(state.lastPrank).toLocaleTimeString('zh-CN') : '暂无'}</div></div>
+        <div class="row center">
+          <button class="btn gold" id="now">😜 立即触发一次</button>
+          <button class="btn sec" id="clr">清空计数</button>
+        </div>
+        <div class="log">恶作剧都是随机的，无法预测。祝你好运……或者坏运。</div>
+      `;
+      $('#now', el).onclick = () => { state.lastPrank = 0; runPrank(true); draw(); };
+      $('#clr', el).onclick = () => { state.pranks = 0; save(); draw(); };
+    };
+    draw();
+  },
+});
+
+/* ==================== 16. 天气控制台 ==================== */
+GAMES.push({
+  id: 'weather', emoji: '🌦️', name: '天气控制台', desc: '查看/切换天气',
+  render(el){
+    let iv = null;
+    const draw = () => {
+      const cur = state.weather ? WEATHERS[state.weather.id] : null;
+      const remain = state.weather ? Math.max(0, state.weather.until - Date.now()) : 0;
+      const mm = Math.floor(remain/60000), ss = Math.floor(remain%60000/1000);
+      el.innerHTML = `
+        <div class="info">天气每 5~15 分钟随机变化，影响所有游戏收益倍率。<br>
+          当前：<b style="color:${cur ? cur.color : '#fff'}">${cur ? cur.icon + ' ' + cur.name : '无'}</b>${state.weather ? ` · 剩余 ${mm}:${String(ss).padStart(2,'0')}` : ''}</div>
+        <div class="wgrid">
+          ${Object.entries(WEATHERS).map(([id, w]) => `
+            <div class="wcard ${state.weather && state.weather.id === id ? 'on' : ''}">
+              <div class="wi">${w.icon}</div>
+              <div class="wn">${w.name}</div>
+              <div class="we">基础 ×${w.mul.toFixed(2)}<br>${w.extras.length ? w.extras.map(e => e.label).join('<br>') : '无额外效果'}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="row center">
+          <button class="btn gold" id="roll">🎲 随机换天气（免费）</button>
+          <button class="btn grn" id="meteor">🌠 召唤流星雨（500 币）</button>
+          <button class="btn sec" id="sunny">☀️ 转晴（免费）</button>
+        </div>
+        <div class="log">※ 天气倍率影响所有抽奖收益。<br>※ 特定天气会给特定游戏额外加成。</div>
+      `;
+      $('#roll', el).onclick = () => { setWeather(pickWeatherId()); draw(); };
+      $('#meteor', el).onclick = () => { if (!spend(500, '召唤流星雨')) return; setWeather('meteor'); draw(); };
+      $('#sunny', el).onclick = () => { setWeather('sunny'); draw(); };
+    };
+    draw();
+    iv = setInterval(() => {
+      if (!document.body.contains(el)) { clearInterval(iv); return; }
+      draw();
+    }, 1000);
+    currentCleanup = () => clearInterval(iv);
+  },
+});
+
+/* ==================== 恶作剧实现 ==================== */
+const PRANKS = [
+  { w: 14, fn: () => { const n = randInt(20,100); if (state.wallet < n) return; addCoin(-n, '被猪猪偷走了'); } },
+  { w: 14, fn: () => { addCoin(randInt(30,150), '猪猪送你的'); } },
+  { w: 12, fn: () => { toast('猪猪在角落拉了一坨……别看了', 'bad', '💩'); } },
+  { w: 10, fn: () => { toast('猪猪说：今天不宜贪，快去玩别的', 'bad', '😜'); } },
+  { w: 10, fn: () => { addCoin(randInt(100,200), '流星雨小费'); } },
+  { w: 9, fn: () => { document.body.style.filter = 'hue-rotate(180deg)'; setTimeout(() => document.body.style.filter = '', 1800); toast('猪猪给你调了个色……', '', '🎨'); } },
+  { w: 8, fn: () => { toast('猪猪在你耳边咕哝：今天运势不错哦', 'ok', '🐷'); } },
+  { w: 8, fn: () => { toast('猪猪蹭了蹭你，给你带来温暖', 'ok', '💗'); } },
+  { w: 7, fn: () => { addCoin(-50, '猪猪拿去交学费了'); } },
+  { w: 5, fn: () => { toast('🐷🐷🐷 三只猪猪同时出现！', 'big', '✨'); document.body.style.transition = 'filter 1s'; document.body.style.filter = 'saturate(2)'; setTimeout(() => document.body.style.filter = '', 1500); } },
+];
+const PRANK_TOTAL = PRANKS.reduce((a, b) => a + b.w, 0);
+function runPrank(force){
+  if (!force && Date.now() - (state.lastPrank || 0) < 2 * 60000) return;
+  if (!force && Math.random() > 0.55) return;
+  state.lastPrank = Date.now();
+  state.pranks = (state.pranks || 0) + 1;
+  save();
+  let r = Math.random() * PRANK_TOTAL;
+  for (const p of PRANKS) { r -= p.w; if (r <= 0) { p.fn(); return; } }
+}
+setInterval(() => runPrank(false), 45000);
+setTimeout(() => runPrank(false), 20000);
+
+/* ==================== 渲染游戏卡片 ==================== */
+function renderGrid(){
+  const grid = $('#grid');
+  if (!grid) return;
+  grid.innerHTML = GAMES.map(g => `
+    <button class="card ${g.hot ? 'hot' : ''} ${g.new ? 'new' : ''}" data-id="${g.id}">
+      <span class="em">${g.emoji}</span>
+      <span class="nm">${g.name}</span>
+      <span class="ds">${g.desc}</span>
+    </button>
+  `).join('');
+  $$('.card', grid).forEach(c => {
+    c.onclick = () => {
+      const g = GAMES.find(x => x.id === c.dataset.id);
+      if (g) openPanel(g);
+    };
+  });
+}
+
+/* ==================== 主题 ==================== */
+const savedTheme = localStorage.getItem('piggy-lite-theme') || 'dark';
+function applyTheme(t){
+  document.body.classList.remove('light', 'pink', 'blue');
+  if (t === 'light') document.body.classList.add('light');
+  else if (t === 'pink') document.body.classList.add('pink');
+  else if (t === 'blue') document.body.classList.add('blue');
+  $$('#themebar button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  try { localStorage.setItem('piggy-lite-theme', t); } catch (e) {}
+}
+$$('#themebar button').forEach(b => b.onclick = () => applyTheme(b.dataset.t));
+applyTheme(savedTheme);
+
+/* ==================== 初始化 ==================== */
+try { renderWallet(); } catch (e) { console.error('renderWallet:', e); }
+try { renderWeather(); } catch (e) { console.error('renderWeather:', e); }
+try { renderGrid(); } catch (e) { console.error('renderGrid:', e); }
+try { if (!state.weather) setWeather(pickWeatherId()); } catch (e) { console.error('setWeather:', e); }
+setInterval(renderWeather, 1000);
+
+})();
+</script>
+</body>
+</html>
